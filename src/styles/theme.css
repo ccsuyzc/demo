@@ -1,0 +1,102 @@
+:root {
+  /* 主题色 */
+  --primary-color: #409EFF;
+  --success-color: #67C23A;
+  --warning-color: #E6A23C;
+  --danger-color: #F56C6C;
+  
+  /* 背景色 */
+  --bg-color: #f5f7fa;
+  --sidebar-bg-color: #304156;
+  
+  /* 文字色 */
+  --text-primary: #303133;
+  --text-regular: #606266;
+  
+  /* 边框 */
+  --border-color: #dcdfe6;
+  
+  /* 过渡效果 */
+  --transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* 全局布局样式 */
+body {
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif;
+  background-color: var(--bg-color);
+}
+
+/* 覆盖Element Plus组件样式 */
+.el-menu {
+  border-right: none !important;
+}
+
+/* 表格增强样式 */
+.el-table {
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  }
+
+  th.el-table__cell {
+    background: var(--bg-color) !important;
+    font-weight: 600;
+  }
+}
+
+/* 表单元素样式 */
+.el-form-item {
+  margin-bottom: 22px;
+  
+  &__label {
+    color: var(--text-regular);
+  }
+}
+
+.el-input {
+  &__inner {
+    transition: var(--transition) !important;
+    &:focus {
+      border-color: var(--primary-color) !important;
+    }
+  }
+}
+
+/* 按钮悬停效果 */
+.el-button {
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+}
+
+/* 卡片阴影动画 */
+.el-card {
+  transition: var(--transition);
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  /* 文章管理搜索表单样式调整 */
+  .search-form {
+    .el-form-item {
+      margin-right: 16px;
+    }
+  }
+
+  /* 表格操作按钮间距调整 */
+  .el-table .el-button {
+    margin-right: 8px;
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  /* 弹窗内容内边距优化 */
+  .el-dialog__body {
+    padding: 20px 24px;
+  }
+}

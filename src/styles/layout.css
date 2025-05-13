@@ -1,0 +1,29 @@
+:root {
+  --sidebar-width: 240px;
+  --collapsed-width: 64px;
+  --header-height: 64px;
+}
+
+.layout-container {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows: var(--header-height) 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  grid-row: 1 / -1;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-content {
+  padding: 24px;
+  background: var(--bg-color);
+}
+
+/* 响应式适配 */
+@media (max-width: 768px) {
+  .layout-container {
+    grid-template-columns: var(--collapsed-width) 1fr;
+  }
+}
