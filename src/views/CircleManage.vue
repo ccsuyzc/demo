@@ -98,8 +98,8 @@
     <el-descriptions-item label="创始人">{{ currentCircleDetail.founder }}</el-descriptions-item>
     <el-descriptions-item label="成员数">{{ currentCircleDetail.memberCount }}</el-descriptions-item>
     <el-descriptions-item label="状态">
-      <el-tag :type="currentCircleDetail.status === 'active' ? 'success' : 'danger'">
-        {{ currentCircleDetail.status === 'active' ? '正常' : '已封禁' }}
+      <el-tag :type="currentCircleDetail.Status === 'active' ? 'success' : 'danger'">
+        {{ currentCircleDetail.Status === 'active' ? '正常' : '已封禁' }}
       </el-tag>
     </el-descriptions-item>
     <el-descriptions-item label="封面">
@@ -118,8 +118,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage,ElMessageBox } from 'element-plus'
 import axios from 'axios'
+
 
 const circles = ref([])
 const searchParams = ref({
@@ -203,7 +204,7 @@ const fetchCircles = async () => {
   cover: "http://127.0.0.1:8080/api"+group.AvatarURL,
   founder: group.Creator.Username,
   memberCount: group.MemberCount,
-  status: group.IsLocked ? 'banned' : 'active'
+  status: group.Status === "banned" ? 'banned' : 'active'
 }))
   } catch (error) {
     ElMessage.error('获取圈子列表失败：' + error.message)
@@ -256,12 +257,41 @@ const fetchCircleDetail = async (id) => {
 
 const toggleStatus = async (circle) => {
   try {
-    const newStatus = circle.status === 'active' ? 'banned' : 'active'
-    await axios.patch(`/api/circles/${circle.id}/status`, { status: newStatus })
+    if (circle.status === 'active') {
+      const result = await ElMessageBox.prompt('请输入封禁理由', '确认封禁', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        inputPattern: /\S+/,
+        inputErrorMessage: '封禁理由不能为空'
+      })
+
+      const userInfo = JSON.parse(localStorage.getItem('BloguserInfo'))
+      
+      await axios.post(`http://127.0.0.1:8080/api/groups/${circle.ID}/ban`, {
+        status: 'banned',
+        reason: result.value,
+        userID: userInfo.ID
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('Blogtoken')}`
+        }
+      })
+    } else {
+      await axios.post(`http://127.0.0.1:8080/api/groups/${circle.ID}/unban`, {
+        status: 'active'
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('Blogtoken')}`
+        }
+      })
+    }
+
     ElMessage.success('操作成功')
     fetchCircles()
   } catch (error) {
-    ElMessage.error('操作失败：' + error.message)
+    if (error !== 'cancel') {
+      ElMessage.error('操作失败: ' + (error.response?.data?.error || error.message))
+    }
   }
 }
 

@@ -90,8 +90,15 @@
                   type="warning"
                   size="small"
                   @click="handleUnpublish(scope.row)"
-                  v-if="activeTab === 'published'"
+                  v-if="scope.row.status === 'published'"
                   >下架</el-button
+                >
+                <el-button
+                  type="success"
+                  size="small"
+                  @click="handleShelving(scope.row)"
+                  v-else
+                  >上架</el-button
                 >
               </template>
               
@@ -358,16 +365,33 @@ const handlePreview = (article) => {
   previewVisible.value = true
 }
 
-const handleUnpublish = async (article) => {
+const handleShelving = async (article) => {
   try {
-    await axios.delete(`http://127.0.0.1:8080/api/articles/${article.id}`)
-    ElMessage.success(response.data.message || '删除成功')
+    await axios.get(`http://127.0.0.1:8080/api/articles/shelving/${article.id}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    ElMessage.success('上架成功')
     await fetchPublishedArticles()
   } catch (error) {
     ElMessage.error('操作失败：' + (error.response?.data?.error || error.message))
   }
 }
 
+const handleUnpublish = async (article) => {
+  try {
+    await axios.get(`http://127.0.0.1:8080/api/articles/delisting/${article.id}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    ElMessage.success('下架成功')
+    await fetchPublishedArticles()
+  } catch (error) {
+    ElMessage.error('操作失败：' + (error.response?.data?.error || error.message))
+  }
+}
 const handleApprove = async (article) => {
   try {
     await axios.put(`http://127.0.0.1:8080/api/articles/publish-status/${article.id}`)

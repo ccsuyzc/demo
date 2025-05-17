@@ -151,12 +151,19 @@ const handleDelete = async (category) => {
       type: 'warning'
     });
 
-    await axios.delete(`http://localhost:8080/api/categories/${category.id}`);
+    await axios.delete(`http://localhost:8080/api/categories/${category.id}`, {
+      headers: {
+        Authorization: localStorage.getItem('token')
+      }
+    });
     await fetchCategories();
     ElMessage.success('删除成功');
   } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage.error('操作失败: ' + (error.response?.data?.message || error.message));
+    if (error.response) {
+      const msg = error.response.data.message || error.response.data.error;
+      ElMessage.error(`操作失败: ${msg}`);
+    } else if (error !== 'cancel') {
+      ElMessage.error('网络请求异常');
     }
   }
 }

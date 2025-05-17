@@ -21,21 +21,33 @@ const userCount = ref(50)
 
 const fetchData = async () => {
   try {
-    // 获取用户总数
-    const userResponse = await fetch('http://127.0.0.1:8080/api/stat/user-count')
-    if (userResponse.ok) {
-      const userData = await userResponse.json()
+    // 获取统计数据
+    const [userRes, articleRes, trafficRes] = await Promise.all([
+      fetch('http://127.0.0.1:8080/api/stat/user-count'),
+      fetch('http://127.0.0.1:8080/api/stat/article-count'),
+      fetch('http://127.0.0.1:8080/api/traffic/last7days')
+    ])
+
+    if (userRes.ok) {
+      const userData = await userRes.json()
       userCount.value = userData.data
     }
     
-    // 获取文章总数
-    const articleResponse = await fetch('http://127.0.0.1:8080/api/stat/article-count')
-    if (articleResponse.ok) {
-      const articleData = await articleResponse.json()
+    if (articleRes.ok) {
+      const articleData = await articleRes.json()
       aCount.value = articleData.data
+    }
+
+    if (trafficRes.ok) {
+      const trafficData = await trafficRes.json()
+      return trafficData.data.map(item => ({
+        date: new Date(item.date).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' }),
+        count: item.count
+      }))
     }
   } catch (error) {
     console.error('数据获取失败:', error)
+    return []
   }
 }
 let visitorChart, regionChart
@@ -44,12 +56,21 @@ onMounted(async () => {
   await fetchData()
   // 初始化访客量图表
   visitorChart = echarts.init(document.getElementById('visitorChart'))
-  const visitorOption = {
-    title: { text: '近7日访客量' },
-    xAxis: { type: 'category', data: ['周一','周二','周三','周四','周五','周六','周日'] },
-    yAxis: { type: 'value' },
-    series: [{ data: [120, 200, 150, 80, 70, 110, 130], type: 'line' }]
-  }
+  const trafficData = await fetchData()
+const visitorOption = {
+  title: { text: '近7日访客量' },
+  xAxis: {
+    type: 'category',
+    data: trafficData.map(item => item.date)
+  },
+  yAxis: { type: 'value' },
+  series: [{
+    data: trafficData.map(item => item.count),
+    type: 'line',
+    smooth: true,
+    areaStyle: { color: 'rgba(64, 158, 255, 0.2)' }
+  }]
+}
   visitorChart.setOption(visitorOption)
 
   // 初始化地域分布图表

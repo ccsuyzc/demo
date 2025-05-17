@@ -47,9 +47,9 @@ const routes = [
         }
       },
       { path: 'user', component: () => import('@/views/UserManage.vue'), meta: { title: '用户管理', roles: ['admin'], showInMenu: true } },
-      { path: 'banner', component: () => import('@/views/BannerManage.vue'), meta: { title: '轮播图管理' , showInMenu: true }},
-      { path: 'question', component: () => import('@/views/QuestionManage.vue'), meta: { title: '题库管理' , showInMenu: true} },
-      { path: 'course', component: () => import('@/views/CourseManage.vue'), meta: { title: '课程管理' , showInMenu: true} },
+      { path: 'banner', component: () => import('@/views/BannerManage.vue'), meta: { title: '轮播图管理' , showInMenu: false }},
+      { path: 'question', component: () => import('@/views/QuestionManage.vue'), meta: { title: '题库管理' , showInMenu: false} },
+      { path: 'course', component: () => import('@/views/CourseManage.vue'), meta: { title: '课程管理' , showInMenu: false} },
       {
         path: 'category',
         component: () => import('@/views/CategoryManage.vue'),
